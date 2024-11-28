@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Pin no Pinterest</title>
+</head>
+<body>
+    <h1>Cadastrar Pin no Pinterest</h1>
+    
+    <form method="POST">
+        <label for="board">Nome do Board:</label>
+        <input type="text" id="board" name="board" required><br><br>
+
+        <label for="note">Descrição do Pin:</label>
+        <textarea id="note" name="note" required></textarea><br><br>
+
+        <label for="link">Link do Site:</label>
+        <input type="url" id="link" name="link" required><br><br>
+
+        <label for="image_url">URL da Imagem:</label>
+        <input type="url" id="image_url" name="image_url" required><br><br>
+
+        <button type="submit">Cadastrar Pin</button>
+    </form>
+
+    <h2>{{ message }}</h2>
+    
+    <a href="{{ url_for('politica_privacidade') }}">Política de Privacidade</a>
+</body>
+</html>
