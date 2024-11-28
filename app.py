@@ -1,7 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for
+import streamlit as st
 import requests
-
-app = Flask(__name__)
 
 # Substitua pelos seus dados do aplicativo do Pinterest
 CLIENT_ID = 'seu_client_id'
@@ -28,32 +26,54 @@ def cadastrar_pin(board, note, link, image_url):
     response = requests.post(PIN_URL, json=data, headers=headers)
 
     if response.status_code == 201:
-        return "Pin criado com sucesso!"
+        st.success("Pin criado com sucesso!")
+        st.json(response.json())
     else:
-        return f"Erro ao criar o Pin: {response.status_code}"
+        st.error(f"Erro ao criar o Pin: {response.status_code}")
+        st.text(response.text)
 
-# Rota para a página de cadastro de Pin
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    message = ""
-    if request.method == 'POST':
-        board = request.form['board']
-        note = request.form['note']
-        link = request.form['link']
-        image_url = request.form['image_url']
-        
+# Função para exibir a Política de Privacidade
+def exibir_politica_privacidade():
+    st.title("Política de Privacidade")
+    st.write("""
+    Esta Política de Privacidade descreve como coletamos, usamos e protegemos suas informações. Ao utilizar este serviço, você concorda com os termos descritos nesta política.
+
+    **Coleta de Dados**: Coletamos informações fornecidas por você ao criar um Pin no Pinterest, como nome de board, descrição e links de imagem.
+
+    **Uso das Informações**: As informações fornecidas são usadas exclusivamente para cadastrar Pins no Pinterest e não são compartilhadas com terceiros.
+
+    **Segurança**: Garantimos que todas as informações fornecidas são protegidas e utilizadas apenas para a finalidade de criar Pins.
+
+    **Alterações na Política**: Reservamo-nos o direito de alterar esta Política de Privacidade a qualquer momento. Quaisquer mudanças serão informadas aqui.
+    """)
+
+# Página de Cadastro de Pin
+def pagina_cadastro():
+    st.title("Cadastrar Pin no Pinterest")
+
+    # Campos do formulário
+    board = st.text_input("Nome do Board")
+    note = st.text_area("Descrição do Pin")
+    link = st.text_input("Link do Site")
+    image_url = st.text_input("URL da Imagem")
+
+    if st.button("Cadastrar Pin"):
         if board and note and link and image_url:
-            message = cadastrar_pin(board, note, link, image_url)
+            cadastrar_pin(board, note, link, image_url)
         else:
-            message = "Por favor, preencha todos os campos!"
-    
-    return render_template('index.html', message=message)
+            st.error("Por favor, preencha todos os campos!")
 
-# Rota para a Política de Privacidade
-@app.route('/politica-privacy')
-def politica_privacidade():
-    return render_template('politica_privacidade.html')
+# Função principal para a navegação
+def main():
+    # Obter os parâmetros de consulta da URL
+    query_params = st.experimental_get_query_params()
 
-# Rodar o servidor
+    # Verificar qual página o usuário quer acessar
+    if 'page' in query_params and query_params['page'][0] == 'politica-privacy':
+        exibir_politica_privacidade()
+    else:
+        pagina_cadastro()
+
+# Executar a aplicação
 if __name__ == "__main__":
-    app.run(debug=True)
+    main()
